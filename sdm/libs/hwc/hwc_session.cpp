@@ -254,6 +254,7 @@ int HWCSession::Prepare(hwc_composer_device_1 *device, size_t num_displays,
 
     if (hwc_session->need_invalidate_) {
       hwc_procs->invalidate(hwc_procs);
+      hwc_session->need_invalidate_ = false;
     }
 
     hwc_session->HandleSecureDisplaySession(displays);
@@ -432,11 +433,6 @@ int HWCSession::SetPowerMode(hwc_composer_device_1 *device, int disp, int mode) 
   int status = -EINVAL;
   if (hwc_session->hwc_display_[disp]) {
     status = hwc_session->hwc_display_[disp]->SetPowerMode(mode);
-  }
-  if (disp == HWC_DISPLAY_PRIMARY && hwc_session->hwc_display_[HWC_DISPLAY_VIRTUAL]) {
-    // Set the power mode for virtual display while setting power mode for primary, as SF
-    // does not invoke SetPowerMode() for virtual display.
-    status = hwc_session->hwc_display_[HWC_DISPLAY_VIRTUAL]->SetPowerMode(mode);
   }
 
   return status;
